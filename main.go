@@ -32,7 +32,7 @@ var rootcmd = &cobra.Command{Use: "stego",
 var color = "\x1b[38;2;128;0;0m"
 var reset = "\x1b[0m"
 var encodeCmd = &cobra.Command{
-	Use:   "encode -i image.png -f secretfile",
+	Use:   "encode -i image.png -f secretfile -p password",
 	Short: "Embed a secret file into a PNG image",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -67,7 +67,7 @@ var encodeCmd = &cobra.Command{
 }
 
 var decodeCmd = &cobra.Command{
-	Use:   "decode -i secretimage.png -o outputfilename",
+	Use:   "decode -i secretimage.png -o outputfilename -p password",
 	Short: "Extract a secret file from a PNG image",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -100,9 +100,13 @@ var decodeCmd = &cobra.Command{
 func init() {
 	encodeCmd.Flags().StringP("image", "i", "", "Path to the image.")
 	encodeCmd.Flags().StringP("file", "f", "", "Path to the secret file.")
+	encodeCmd.Flags().StringP("password", "p", "", "Password to encrypt the hidden data.")
+
 	rootcmd.AddCommand(encodeCmd)
 	decodeCmd.Flags().StringP("image", "i", "", "path to the secret image.")
 	decodeCmd.Flags().StringP("output", "o", "", "Path to save the decoded file")
+	encodeCmd.Flags().StringP("password", "p", "", "Password to decrypt the hidden data.")
+
 	rootcmd.AddCommand(decodeCmd)
 	rootcmd.CompletionOptions.DisableDefaultCmd = true
 
