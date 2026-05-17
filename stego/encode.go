@@ -92,4 +92,5 @@ func Encode(cfg *config.Config) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 }

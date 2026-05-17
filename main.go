@@ -68,7 +68,7 @@ var encodeCmd = &cobra.Command{
 			return
 		}
 
-		if enc.InputImage == "" || enc.SecretFile == "" {
+		if enc.InputImage == "" || enc.SecretFile == "" || enc.Password == "" || enc.OutputImage == "" {
 			cmd.Help()
 			log.Fatal("Not enough arguments.")
 
@@ -104,7 +104,12 @@ var decodeCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		if dec.EncodedImage == "" || dec.DecodedFile == "" {
+		dec.Password, err = cmd.Flags().GetString("seckey")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if dec.EncodedImage == "" || dec.DecodedFile == "" || dec.Password == "" {
 			cmd.Help()
 			log.Fatal("Not enough arguments.")
 		}
