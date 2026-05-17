@@ -2,7 +2,6 @@ package stego
 
 import (
 	"encoding/binary"
-	"fmt"
 	"image"
 	_ "image/png"
 	"log"
@@ -21,7 +20,7 @@ type FileMetaData struct {
 }
 
 func Decode(cfg *config.Config) {
-	inputimg, err := os.Open(cfg.OutputImage + ".png")
+	inputimg, err := os.Open(cfg.EncodedImage + ".png")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -47,9 +46,9 @@ func Decode(cfg *config.Config) {
 	getFileExtension(&filemetadata, pixels)
 	salt, nonce := GetNonceandSalt(&filemetadata, pixels)
 	ciphertext := DecodeData(&filemetadata, pixels)
-	fmt.Println("decoded ciphertext:", len(ciphertext))
+	// fmt.Println("decoded ciphertext:", len(ciphertext))
 	plaintext := crypto.Decrypt(ciphertext, salt, nonce, cfg.Password)
-	fmt.Println("decoded ciphertext:", len(ciphertext))
+	// fmt.Println("decoded ciphertext:", len(ciphertext))
 	DecodedData := compress.Decompress(plaintext)
 
 	err = os.WriteFile(cfg.DecodedFile+filemetadata.Extname, DecodedData, 0644)
@@ -111,7 +110,7 @@ func getDatalenandExtLen(pixels []uint8) FileMetaData {
 			bitcount = 0
 		}
 	}
-	fmt.Println(extlength)
+	// fmt.Println(extlength)
 
 	lengthBytes := binary.BigEndian.Uint32(byteslice)
 

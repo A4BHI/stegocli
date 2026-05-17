@@ -5,7 +5,6 @@ import (
 	"crypto/cipher"
 	"crypto/pbkdf2"
 	"crypto/sha256"
-	"fmt"
 	"log"
 )
 
@@ -31,6 +30,6 @@ func Decrypt(ciphertext []byte, salt []byte, nonce []byte, password string) []by
 		log.Fatal(err)
 	}
 
-	fmt.Println("File Decrypted")
+	// fmt.Println("File Decrypted")
 	return plaintext
 }

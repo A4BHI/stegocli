@@ -2,7 +2,6 @@ package stego
 
 import (
 	"encoding/binary"
-	"fmt"
 	"image"
 	"image/png"
 	_ "image/png"
@@ -43,7 +42,7 @@ func Encode(cfg *config.Config) {
 	ciphertext, nonce, salt := crypto.Encrypt(data, cfg.Password)
 	index := 0
 	length := len(ciphertext)
-	fmt.Println("Encoded length:", len(ciphertext))
+	// fmt.Println("Encoded length:", len(ciphertext))
 	ext := filepath.Ext(cfg.SecretFile)
 	extdata := []byte(ext)
 
@@ -79,16 +78,16 @@ func Encode(cfg *config.Config) {
 		log.Fatal(err)
 	}
 	index = 0
-	bitsPrinted := 0
-	fmt.Print("Encode bits: ")
+	// bitsPrinted := 0
+	// fmt.Print("Encode bits: ")
 
-	for bitsPrinted < 32 {
+	// for bitsPrinted < 32 {
 
-		fmt.Print(pixels[index] & 1)
-		bitsPrinted++
-		index++
-	}
-	fmt.Println()
+	// 	fmt.Print(pixels[index] & 1)
+	// 	bitsPrinted++
+	// 	index++
+	// }
+	// fmt.Println()
 	err = png.Encode(OutFile, rgba)
 	if err != nil {
 		log.Fatal(err)

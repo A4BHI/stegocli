@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"stegocli/config"
+	"stegocli/stego"
 
 	"github.com/spf13/cobra"
 )
@@ -55,11 +56,25 @@ var encodeCmd = &cobra.Command{
 			return
 		}
 
+		enc.OutputImage, err = cmd.Flags().GetString("output")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		enc.Password, err = cmd.Flags().GetString("password")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
 		if enc.InputImage == "" || enc.SecretFile == "" {
 			cmd.Help()
 			log.Fatal("Not enough arguments.")
 
 		}
+
+		stego.Encode(&enc)
 
 		// fmt.Println("Image Path : ", enc.Image, "\nFile Path : ", enc.SecretFile)
 
@@ -79,17 +94,17 @@ var decodeCmd = &cobra.Command{
 		dec := config.Config{}
 		var err error
 
-		dec.DecodedFile, err = cmd.Flags().GetString("image")
+		dec.EncodedImage, err = cmd.Flags().GetString("image")
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		dec., err = cmd.Flags().GetString("output")
+		dec.DecodedFile, err = cmd.Flags().GetString("output")
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		if dec.Image == "" || dec.OutputFile == "" {
+		if dec.EncodedImage == "" || dec.DecodedFile == "" {
 			cmd.Help()
 			log.Fatal("Not enough arguments.")
 		}
@@ -100,12 +115,13 @@ var decodeCmd = &cobra.Command{
 func init() {
 	encodeCmd.Flags().StringP("image", "i", "", "Path to the image.")
 	encodeCmd.Flags().StringP("file", "f", "", "Path to the secret file.")
+	encodeCmd.Flags().StringP("output", "o", "", "Output image name with path.")
 	encodeCmd.Flags().StringP("password", "p", "", "Password to encrypt the hidden data.")
 
 	rootcmd.AddCommand(encodeCmd)
 	decodeCmd.Flags().StringP("image", "i", "", "path to the secret image.")
 	decodeCmd.Flags().StringP("output", "o", "", "Path to save the decoded file")
-	encodeCmd.Flags().StringP("password", "p", "", "Password to decrypt the hidden data.")
+	encodeCmd.Flags().StringP("seckey", "k", "", "Password to decrypt the hidden data.")
 
 	rootcmd.AddCommand(decodeCmd)
 	rootcmd.CompletionOptions.DisableDefaultCmd = true
