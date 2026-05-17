@@ -89,6 +89,11 @@ var decodeCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
+		if dec.Image == "" || dec.OutputFile == "" {
+			cmd.Help()
+			log.Fatal("Not enough arguments.")
+		}
+
 	},
 }
 
