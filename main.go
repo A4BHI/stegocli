@@ -104,7 +104,7 @@ var decodeCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		dec.Password, err = cmd.Flags().GetString("seckey")
+		dec.Password, err = cmd.Flags().GetString("password")
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -113,6 +113,8 @@ var decodeCmd = &cobra.Command{
 			cmd.Help()
 			log.Fatal("Not enough arguments.")
 		}
+
+		stego.Decode(&dec)
 
 	},
 }
@@ -126,7 +128,7 @@ func init() {
 	rootcmd.AddCommand(encodeCmd)
 	decodeCmd.Flags().StringP("image", "i", "", "path to the secret image.")
 	decodeCmd.Flags().StringP("output", "o", "", "Path to save the decoded file")
-	encodeCmd.Flags().StringP("seckey", "k", "", "Password to decrypt the hidden data.")
+	decodeCmd.Flags().StringP("password", "p", "", "Password to decrypt the hidden data.")
 
 	rootcmd.AddCommand(decodeCmd)
 	rootcmd.CompletionOptions.DisableDefaultCmd = true
