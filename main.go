@@ -49,7 +49,9 @@ var encodeCmd = &cobra.Command{
 }
 
 var decodeCmd = &cobra.Command{
-	Use: "decode -i secretimage.png -o outputfilename",
+	Use:  "decode -i secretimage.png -o outputfilename",
+	Args: cobra.NoArgs,
+	Run:  func(cmd *cobra.Command, args []string) {},
 }
 
 func init() {
