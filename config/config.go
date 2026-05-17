@@ -1,11 +1,9 @@
 package config
 
-type Encode struct {
-	Image      string
-	SecretFile string
-}
-
-type Decode struct {
-	Image      string
-	OutputFile string
+type Config struct {
+	InputImage  string
+	SecretFile  string
+	OutputImage string
+	DecodedFile string
+	Password    string
 }

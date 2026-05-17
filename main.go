@@ -42,8 +42,8 @@ var encodeCmd = &cobra.Command{
 			cmd.Help()
 			log.Fatal("No flags provided.")
 		}
-		enc := config.Encode{}
-		enc.Image, err = cmd.Flags().GetString("image")
+		enc := config.Config{}
+		enc.InputImage, err = cmd.Flags().GetString("image")
 		if err != nil {
 			fmt.Print(err)
 			return
@@ -55,13 +55,13 @@ var encodeCmd = &cobra.Command{
 			return
 		}
 
-		if enc.Image == "" || enc.SecretFile == "" {
+		if enc.InputImage == "" || enc.SecretFile == "" {
 			cmd.Help()
 			log.Fatal("Not enough arguments.")
 
 		}
 
-		fmt.Println("Image Path : ", enc.Image, "\nFile Path : ", enc.SecretFile)
+		// fmt.Println("Image Path : ", enc.Image, "\nFile Path : ", enc.SecretFile)
 
 	},
 }
@@ -76,15 +76,15 @@ var decodeCmd = &cobra.Command{
 			cmd.Help()
 			log.Fatal("Not enough flags.")
 		}
-		dec := config.Decode{}
+		dec := config.Config{}
 		var err error
 
-		dec.Image, err = cmd.Flags().GetString("image")
+		dec.DecodedFile, err = cmd.Flags().GetString("image")
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		dec.OutputFile, err = cmd.Flags().GetString("output")
+		dec., err = cmd.Flags().GetString("output")
 		if err != nil {
 			log.Fatal(err)
 		}
