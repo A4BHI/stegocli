@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"stegocli/config"
 
 	"github.com/spf13/cobra"
 )
@@ -24,14 +25,14 @@ var encodeCmd = &cobra.Command{
 			cmd.Help()
 			log.Fatal("No flags provided.")
 		}
-
-		Image, err = cmd.Flags().GetString("image")
+		enc := config.Encode{}
+		enc.Image, err = cmd.Flags().GetString("image")
 		if err != nil {
 			fmt.Print(err)
 			return
 		}
 
-		File, err = cmd.Flags().GetString("file")
+		enc.SecretFile, err = cmd.Flags().GetString("file")
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -51,13 +52,34 @@ var encodeCmd = &cobra.Command{
 var decodeCmd = &cobra.Command{
 	Use:  "decode -i secretimage.png -o outputfilename",
 	Args: cobra.NoArgs,
-	Run:  func(cmd *cobra.Command, args []string) {},
+	Run: func(cmd *cobra.Command, args []string) {
+
+		if cmd.Flags().NFlag() == 0 {
+			cmd.Help()
+			log.Fatal("Not enough flags.")
+		}
+		dec := config.Decode{}
+		var err error
+
+		dec.Image, err = cmd.Flags().GetString("image")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		dec.OutputFile, err = cmd.Flags().GetString("output")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+	},
 }
 
 func init() {
 	encodeCmd.Flags().StringP("image", "i", "", "Path to the image.")
 	encodeCmd.Flags().StringP("file", "f", "", "Path to the secret file.")
 	rootcmd.AddCommand(encodeCmd)
+	decodeCmd.Flags().StringP("image", "i", "", "path to the secret image.")
+	decodeCmd.Flags().StringP("output", "o", "", "Path to save the decoded file")
 	rootcmd.AddCommand(decodeCmd)
 }
 
