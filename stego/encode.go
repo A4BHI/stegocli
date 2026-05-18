@@ -2,6 +2,7 @@ package stego
 
 import (
 	"encoding/binary"
+	"fmt"
 	"image"
 	"image/png"
 	_ "image/png"
@@ -37,9 +38,11 @@ func Encode(cfg *config.Config) {
 	}
 
 	pixels := rgba.Pix
-
+	fmt.Println("Compressing the secret file.")
 	data := compress.Compress(cfg.SecretFile)
+	fmt.Println("Encrypting the secret file.")
 	ciphertext, nonce, salt := crypto.Encrypt(data, cfg.Password)
+	fmt.Println("Hiding data inside the image.")
 	index := 0
 	length := len(ciphertext)
 	// fmt.Println("Encoded length:", len(ciphertext))
@@ -92,5 +95,7 @@ func Encode(cfg *config.Config) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	fmt.Println("Succesfully encoded the data inside the image.")
 
 }
