@@ -2,17 +2,19 @@ package stego
 
 import (
 	"encoding/binary"
-	"fmt"
 	"image"
 	"image/png"
 	_ "image/png"
 	"path/filepath"
+	"time"
 
 	"log"
 	"os"
 	"stegocli/compress"
 	"stegocli/config"
 	"stegocli/crypto"
+
+	"github.com/briandowns/spinner"
 )
 
 func Encode(cfg *config.Config) {
@@ -38,16 +40,6 @@ func Encode(cfg *config.Config) {
 
 	pixels := rgba.Pix
 
-	// s := spinner.New(spinner.CharSets[14], 80*time.Millisecond) // 100s was likely a typo for 100ms	s.Start()
-	// s.Suffix = "  Compressing the secret file..."
-	// s.Color("cyan", "bold")
-	// s.FinalMSG = "\x1b[32m✔\x1b[0m Data compressed successfully.\n"
-	// s.Start()
-	// data := compress.Compress(cfg.SecretFile)
-	// time.Sleep(1 * time.Second)
-
-	// s.Stop()
-
 	result := config.StylenCallFunctions(func() any {
 		return compress.Compress(cfg.SecretFile)
 	}, "Compressing the secret file...", "\x1b[32m✔\x1b[0m Data compressed successfully.\n")
@@ -65,6 +57,13 @@ func Encode(cfg *config.Config) {
 		nonce      []byte
 		salt       []byte
 	})
+
+	s := spinner.New(spinner.CharSets[14], 80*time.Millisecond) // 100s was likely a typo for 100ms	s.Start()
+	s.Suffix = "  Embedding encrypted payload into the carrier image..."
+	s.Color("cyan", "bold")
+	s.FinalMSG = "\x1b[32m✔\x1b[0m Steganographic encoding complete. Payload secured.\n"
+	s.Start()
+
 	index := 0
 	length := len(encryption.ciphertext)
 	// fmt.Println("Encoded length:", len(ciphertext))
@@ -118,6 +117,6 @@ func Encode(cfg *config.Config) {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Succesfully encoded the data inside the image.")
+	s.Stop()
 
 }
