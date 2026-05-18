@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"image"
 	"log"
 	"os"
 	"os/exec"
@@ -11,6 +12,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var color = "\x1b[38;2;128;0;0m"
+var reset = "\x1b[0m"
 var banner = color + `
 
   ██████ ▄▄▄█████▓▓█████   ▄████  ▒█████      ▄████▄   ██▓     ██▓
@@ -30,8 +33,21 @@ var rootcmd = &cobra.Command{Use: "stego",
 	Long: "A simple, user-friendly CLI that hides and extracts files in PNG images using LSB steganography.",
 	Args: cobra.ArbitraryArgs,
 }
-var color = "\x1b[38;2;128;0;0m"
-var reset = "\x1b[0m"
+
+func Ispng(imagepath string) bool {
+	file, err := os.Open(imagepath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, format, err := image.DecodeConfig(file)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return format == "png"
+}
+
 var encodeCmd = &cobra.Command{
 	Use:   "encode -i image.png -f secretfile -p password",
 	Short: "Embed a secret file into a PNG image",
@@ -72,6 +88,10 @@ var encodeCmd = &cobra.Command{
 			cmd.Help()
 			log.Fatal("Not enough arguments.")
 
+		}
+
+		if !Ispng(enc.InputImage) {
+			log.Fatal("Tool supports .png images only.")
 		}
 
 		stego.Encode(&enc)
