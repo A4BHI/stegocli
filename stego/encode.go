@@ -48,12 +48,25 @@ func Encode(cfg *config.Config) {
 
 	// s.Stop()
 
-	result := config.StylenCallFunctions(compress.Compress(cfg.SecretFile), "Compressing the secret file...", "\x1b[32m✔\x1b[0m Data compressed successfully.\n")
+	result := config.StylenCallFunctions(func() any {
+		return compress.Compress(cfg.SecretFile)
+	}, "Compressing the secret file...", "\x1b[32m✔\x1b[0m Data compressed successfully.\n")
 
-	ciphertext, nonce, salt := crypto.Encrypt(data, cfg.Password)
-	fmt.Println("Hiding data inside the image.")
+	encryptionResults := config.StylenCallFunctions(func() any {
+		ciphertext, nonce, salt := crypto.Encrypt(result.([]byte), cfg.Password)
+		return struct {
+			ciphertext []byte
+			nonce      []byte
+			salt       []byte
+		}{ciphertext, nonce, salt}
+	}, "Encrypting the secret file using AES-256", "\x1b[32m✔\x1b[0m Encryption Process Completed.")
+	encryption := encryptionResults.(struct {
+		ciphertext []byte
+		nonce      []byte
+		salt       []byte
+	})
 	index := 0
-	length := len(ciphertext)
+	length := len(encryption.ciphertext)
 	// fmt.Println("Encoded length:", len(ciphertext))
 	ext := filepath.Ext(cfg.SecretFile)
 	extdata := []byte(ext)
@@ -67,9 +80,9 @@ func Encode(cfg *config.Config) {
 
 	payload := append(lengthBytes, extbytes)
 	payload = append(payload, extdata...)
-	payload = append(payload, salt...)
-	payload = append(payload, nonce...)
-	payload = append(payload, ciphertext...)
+	payload = append(payload, encryption.salt...)
+	payload = append(payload, encryption.nonce...)
+	payload = append(payload, encryption.ciphertext...)
 	totalbits := len(payload) * 8
 
 	if totalbits > len(pixels) {
