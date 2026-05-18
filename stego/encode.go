@@ -7,13 +7,15 @@ import (
 	"image/png"
 	_ "image/png"
 	"path/filepath"
+	"time"
 
+	"log"
+	"os"
 	"stegocli/compress"
 	"stegocli/config"
 	"stegocli/crypto"
 
-	"log"
-	"os"
+	"github.com/briandowns/spinner"
 )
 
 func Encode(cfg *config.Config) {
@@ -38,9 +40,17 @@ func Encode(cfg *config.Config) {
 	}
 
 	pixels := rgba.Pix
-	fmt.Println("Compressing the secret file.")
+
+	s := spinner.New(spinner.CharSets[14], 80*time.Millisecond) // 100s was likely a typo for 100ms	s.Start()
+	s.Suffix = "  Compressing the secret file..."
+	s.Color("cyan", "bold")
+	s.FinalMSG = "\x1b[32m✔\x1b[0m Data compressed successfully.\n"
+	s.Start()
 	data := compress.Compress(cfg.SecretFile)
-	fmt.Println("Encrypting the secret file.")
+	time.Sleep(1 * time.Second)
+
+	s.Stop()
+
 	ciphertext, nonce, salt := crypto.Encrypt(data, cfg.Password)
 	fmt.Println("Hiding data inside the image.")
 	index := 0
