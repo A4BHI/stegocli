@@ -17,10 +17,12 @@ type Config struct {
 }
 
 func StylenCallFunctions(function func() any, suffix string, finalmsg string) any {
-	s := spinner.New(spinner.CharSets[14], 80*time.Millisecond)
+	// spinnerset := []string{"S", "T", "E", "G", "O"}
+	s := spinner.New(spinner.CharSets[0], 80*time.Millisecond)
 	s.Suffix = suffix
-	// s.Color("cyan", "bold")
+	s.Color("cyan", "bold")
 	s.FinalMSG = finalmsg
+
 	s.Start()
 	// data := function
 	results := function()

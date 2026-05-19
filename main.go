@@ -12,7 +12,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var color = "\x1b[38;2;128;0;0m"
+// var color = "\x1b[38;2;128;0;0m"
+var color = "\x1b[38;2;255;85;85m"
 var reset = "\x1b[0m"
 var banner = color + `
 
