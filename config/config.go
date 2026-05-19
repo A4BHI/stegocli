@@ -16,7 +16,7 @@ type Config struct {
 }
 
 func StylenCallFunctions(function func() any, suffix string, finalmsg string) any {
-	s := spinner.New(spinner.CharSets[14], 80*time.Millisecond) // 100s was likely a typo for 100ms	s.Start()
+	s := spinner.New(spinner.CharSets[14], 80*time.Millisecond)
 	s.Suffix = "  Compressing the secret file..."
 	s.Color("cyan", "bold")
 	s.FinalMSG = "\x1b[32m✔\x1b[0m Data compressed successfully.\n"
