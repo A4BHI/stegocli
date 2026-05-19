@@ -152,7 +152,7 @@ func GetNonceandSalt(filemetadata *FileMetaData, pixels []uint8) ([]byte, []byte
 	var currbyte byte
 	bitcount := 0
 
-	for bitsRead < 224 { //salt * nonce means 16 * 12 = 224 bits we have to iterate till 224
+	for bitsRead < 224 { //salt * nonce means 16bytes * 12bytes = 224 bits we have to iterate till 224
 
 		bit := pixels[filemetadata.CurrIndex] & 1
 
