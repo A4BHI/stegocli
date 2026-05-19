@@ -68,14 +68,25 @@ func Decode(cfg *config.Config) {
 	// ciphertext := DecodeData(&filemetadata, pixels)
 	ciphertext := readBytes(&filemetadata, pixels, filemetadata.Datalength)
 	// fmt.Println("decoded ciphertext:", len(ciphertext))
-	plaintext := crypto.Decrypt(ciphertext, salt, nonce, cfg.Password)
-	// fmt.Println("decoded ciphertext:", len(ciphertext))
-	DecodedData := compress.Decompress(plaintext)
 
-	err = os.WriteFile(cfg.DecodedFile+filemetadata.Extname, DecodedData, 0644)
-	if err != nil {
-		log.Fatal("save to device", err)
-	}
+	plaintext := config.StylenCallFunctions(func() any {
+		plaintext := crypto.Decrypt(ciphertext, salt, nonce, cfg.Password)
+		return plaintext
+	}, "Decrypting embedded data.", "\x1b[32m✔\x1b[0m Decryption completed.")
+	// plaintext := crypto.Decrypt(ciphertext, salt, nonce, cfg.Password)
+	// fmt.Println("decoded ciphertext:", len(ciphertext))
+	DecompressedData := config.StylenCallFunctions(func() any {
+		decompressedData := compress.Decompress(plaintext.([]byte))
+		return decompressedData
+	}, "Decompressing extracted data.", "\x1b[32m✔\x1b[0m Decompression completed.")
+
+	config.StylenCallFunctions(func() any {
+		err = os.WriteFile(cfg.DecodedFile+filemetadata.Extname, DecompressedData.([]byte), 0644)
+		if err != nil {
+			log.Fatal("save to device", err)
+		}
+		return nil
+	}, "Writing extracted data to disk...", "\x1b[32m✔\x1b[0m File written successfully\n  Saved as: "+cfg.DecodedFile+filemetadata.Extname)
 
 }
 func readBytes(fmd *FileMetaData, pixels []uint8, length int) []byte {
@@ -198,30 +209,30 @@ func readBytes(fmd *FileMetaData, pixels []uint8, length int) []byte {
 
 //		return saltslice, nonceslice
 //	}
-func DecodeData(filemetadata *FileMetaData, pixels []uint8) []byte {
-	bitsRead := 0
-	var sliceofdata []byte
-	var currbyte byte
-	bitcount := 0
-	for bitsRead < filemetadata.Datalength {
-		bit := pixels[filemetadata.CurrIndex] & 1
-		currbyte = (currbyte << 1) | bit
-		filemetadata.CurrIndex++
-		bitcount++
-		bitsRead++
+// func DecodeData(filemetadata *FileMetaData, pixels []uint8) []byte {
+// 	bitsRead := 0
+// 	var sliceofdata []byte
+// 	var currbyte byte
+// 	bitcount := 0
+// 	for bitsRead < filemetadata.Datalength {
+// 		bit := pixels[filemetadata.CurrIndex] & 1
+// 		currbyte = (currbyte << 1) | bit
+// 		filemetadata.CurrIndex++
+// 		bitcount++
+// 		bitsRead++
 
-		if bitcount == 8 {
-			sliceofdata = append(sliceofdata, currbyte)
-			currbyte = 0
-			bitcount = 0
-		}
-	}
-	// filename = filename + filemetadata.Extname
-	// err := os.WriteFile(filename, sliceofdata, 0644)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+// 		if bitcount == 8 {
+// 			sliceofdata = append(sliceofdata, currbyte)
+// 			currbyte = 0
+// 			bitcount = 0
+// 		}
+// 	}
+// 	// filename = filename + filemetadata.Extname
+// 	// err := os.WriteFile(filename, sliceofdata, 0644)
+// 	// if err != nil {
+// 	// 	log.Fatal(err)
+// 	// }
 
-	return sliceofdata
+// 	return sliceofdata
 
-}
+// }
