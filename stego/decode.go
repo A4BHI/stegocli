@@ -61,8 +61,12 @@ func Decode(cfg *config.Config) {
 	filemetadata.Extname = string(readBytes(&filemetadata, pixels, filemetadata.Extlength))
 
 	// getFileExtension(&filemetadata, pixels)
-	salt, nonce := GetNonceandSalt(&filemetadata, pixels)
-	ciphertext := DecodeData(&filemetadata, pixels)
+	// salt, nonce := GetNonceandSalt(&filemetadata, pixels)
+
+	salt := readBytes(&filemetadata, pixels, SALT_BITS)
+	nonce := readBytes(&filemetadata, pixels, NONCE_BITS)
+	// ciphertext := DecodeData(&filemetadata, pixels)
+	ciphertext := readBytes(&filemetadata, pixels, filemetadata.Datalength)
 	// fmt.Println("decoded ciphertext:", len(ciphertext))
 	plaintext := crypto.Decrypt(ciphertext, salt, nonce, cfg.Password)
 	// fmt.Println("decoded ciphertext:", len(ciphertext))
@@ -139,61 +143,61 @@ func readBytes(fmd *FileMetaData, pixels []uint8, length int) []byte {
 // 	}
 // }
 
-func getFileExtension(filemetadata *FileMetaData, pixels []uint8) {
-	bitsRead := 0
-	var currbyte byte
-	bitcount := 0
-	var sliceofext []byte
-	for bitsRead < filemetadata.Extlength {
-		bit := pixels[filemetadata.CurrIndex] & 1
-		currbyte = (currbyte << 1) | bit
-		filemetadata.CurrIndex++
-		bitcount++
-		bitsRead++
+// func getFileExtension(filemetadata *FileMetaData, pixels []uint8) {
+// 	bitsRead := 0
+// 	var currbyte byte
+// 	bitcount := 0
+// 	var sliceofext []byte
+// 	for bitsRead < filemetadata.Extlength {
+// 		bit := pixels[filemetadata.CurrIndex] & 1
+// 		currbyte = (currbyte << 1) | bit
+// 		filemetadata.CurrIndex++
+// 		bitcount++
+// 		bitsRead++
 
-		if bitcount == 8 {
-			sliceofext = append(sliceofext, currbyte)
-			currbyte = 0
-			bitcount = 0
-		}
-	}
+// 		if bitcount == 8 {
+// 			sliceofext = append(sliceofext, currbyte)
+// 			currbyte = 0
+// 			bitcount = 0
+// 		}
+// 	}
 
-	filemetadata.Extname = string(sliceofext)
+// 	filemetadata.Extname = string(sliceofext)
 
-}
-func GetNonceandSalt(filemetadata *FileMetaData, pixels []uint8) ([]byte, []byte) {
-	bitsRead := 0
+// }
+// func GetNonceandSalt(filemetadata *FileMetaData, pixels []uint8) ([]byte, []byte) {
+// 	bitsRead := 0
 
-	var saltslice []byte
-	var nonceslice []byte
+// 	var saltslice []byte
+// 	var nonceslice []byte
 
-	var currbyte byte
-	bitcount := 0
+// 	var currbyte byte
+// 	bitcount := 0
 
-	for bitsRead < 224 { //salt * nonce means 16bytes * 12bytes = 224 bits we have to iterate till 224
+// 	for bitsRead < 224 { //salt * nonce means 16bytes * 12bytes = 224 bits we have to iterate till 224
 
-		bit := pixels[filemetadata.CurrIndex] & 1
+// 		bit := pixels[filemetadata.CurrIndex] & 1
 
-		currbyte = (currbyte << 1) | bit
-		bitcount++
-		bitsRead++
-		filemetadata.CurrIndex++
+// 		currbyte = (currbyte << 1) | bit
+// 		bitcount++
+// 		bitsRead++
+// 		filemetadata.CurrIndex++
 
-		if bitcount == 8 && bitsRead <= 128 { //first 128 bits = salt
-			saltslice = append(saltslice, currbyte)
-			currbyte = 0
-			bitcount = 0
-		}
+// 		if bitcount == 8 && bitsRead <= 128 { //first 128 bits = salt
+// 			saltslice = append(saltslice, currbyte)
+// 			currbyte = 0
+// 			bitcount = 0
+// 		}
 
-		if bitsRead > 128 && bitcount == 8 { //rest of the bits till 224 belongs to salt
-			nonceslice = append(nonceslice, currbyte)
-			currbyte = 0
-			bitcount = 0
-		}
-	}
+// 		if bitsRead > 128 && bitcount == 8 { //rest of the bits till 224 belongs to salt
+// 			nonceslice = append(nonceslice, currbyte)
+// 			currbyte = 0
+// 			bitcount = 0
+// 		}
+// 	}
 
-	return saltslice, nonceslice
-}
+//		return saltslice, nonceslice
+//	}
 func DecodeData(filemetadata *FileMetaData, pixels []uint8) []byte {
 	bitsRead := 0
 	var sliceofdata []byte
