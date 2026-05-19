@@ -15,6 +15,10 @@ func Encrypt(compressedData []byte, password string) (ciphertext []byte, nonce [
 
 	salt = make([]byte, 16)
 
+	if _, err := io.ReadFull(rand.Reader, salt); err != nil {
+		log.Fatal(err)
+	}
+
 	key, err := pbkdf2.Key(sha256.New, password, salt, 10000, 32)
 	if err != nil {
 		fmt.Println(err)
