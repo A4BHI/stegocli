@@ -42,7 +42,7 @@ func Encode(cfg *config.Config) {
 
 	result := config.StylenCallFunctions(func() any {
 		return compress.Compress(cfg.SecretFile)
-	}, "Compressing the secret file...", "\x1b[32m✔\x1b[0m Data compressed successfully.\n")
+	}, "\x1b[38;2;128;0;0m Compressing the secret file...", "\x1b[32m✔\x1b[0m \x1b[38;2;0;255;0mData compressed successfully.")
 
 	encryptionResults := config.StylenCallFunctions(func() any {
 		ciphertext, nonce, salt := crypto.Encrypt(result.([]byte), cfg.Password)
@@ -51,7 +51,7 @@ func Encode(cfg *config.Config) {
 			nonce      []byte
 			salt       []byte
 		}{ciphertext, nonce, salt}
-	}, "Encrypting the secret file using AES-256", "\x1b[32m✔\x1b[0m Encryption Process Completed.")
+	}, "\x1b[38;2;128;0;0mEncrypting the secret file using AES-256", "\x1b[32m✔\x1b[0m \x1b[38;2;0;255;0mEncryption Process Completed.")
 	encryption := encryptionResults.(struct {
 		ciphertext []byte
 		nonce      []byte
@@ -59,18 +59,16 @@ func Encode(cfg *config.Config) {
 	})
 
 	s := spinner.New(spinner.CharSets[14], 80*time.Millisecond)
-	s.Suffix = "  Embedding encrypted payload into the carrier image..."
+	s.Suffix = "\x1b[38;2;128;0;0mEmbedding encrypted payload into the carrier image..."
 	s.Color("cyan", "bold")
-	s.FinalMSG = "\x1b[32m✔\x1b[0m Steganographic encoding complete. Payload secured.\n"
+	s.FinalMSG = "\x1b[32m✔\x1b[0m \x1b[38;2;0;255;0mSteganographic encoding complete. Payload secured.\n"
 	s.Start()
 
 	index := 0
 	length := len(encryption.ciphertext)
-	// fmt.Println("Encoded length:", len(ciphertext))
+
 	ext := filepath.Ext(cfg.SecretFile)
 	extdata := []byte(ext)
-
-	// magic := []byte("a4bhi")
 
 	extbytes := byte(len(extdata))
 	lengthBytes := make([]byte, 4)

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/briandowns/spinner"
@@ -18,7 +19,7 @@ type Config struct {
 func StylenCallFunctions(function func() any, suffix string, finalmsg string) any {
 	s := spinner.New(spinner.CharSets[14], 80*time.Millisecond)
 	s.Suffix = suffix
-	s.Color("cyan", "bold")
+	// s.Color("cyan", "bold")
 	s.FinalMSG = finalmsg
 	s.Start()
 	// data := function
@@ -27,6 +28,7 @@ func StylenCallFunctions(function func() any, suffix string, finalmsg string) an
 	time.Sleep(1 * time.Second)
 
 	s.Stop()
+	fmt.Println()
 
 	return results
 }

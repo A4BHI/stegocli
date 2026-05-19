@@ -60,25 +60,20 @@ func Decode(cfg *config.Config) {
 
 	filemetadata.Extname = string(readBytes(&filemetadata, pixels, filemetadata.Extlength))
 
-	// getFileExtension(&filemetadata, pixels)
-	// salt, nonce := GetNonceandSalt(&filemetadata, pixels)
-
 	salt := readBytes(&filemetadata, pixels, SALT_BITS)
 	nonce := readBytes(&filemetadata, pixels, NONCE_BITS)
-	// ciphertext := DecodeData(&filemetadata, pixels)
+
 	ciphertext := readBytes(&filemetadata, pixels, filemetadata.Datalength)
-	// fmt.Println("decoded ciphertext:", len(ciphertext))
 
 	plaintext := config.StylenCallFunctions(func() any {
 		plaintext := crypto.Decrypt(ciphertext, salt, nonce, cfg.Password)
 		return plaintext
-	}, "Decrypting embedded data.", "\x1b[32m✔\x1b[0m Decryption completed.")
-	// plaintext := crypto.Decrypt(ciphertext, salt, nonce, cfg.Password)
-	// fmt.Println("decoded ciphertext:", len(ciphertext))
+	}, "\x1b[38;2;128;0;0mDecrypting embedded data.", "\x1b[32m✔\x1b[0m \x1b[38;2;0;255;0mDecryption completed.")
+
 	DecompressedData := config.StylenCallFunctions(func() any {
 		decompressedData := compress.Decompress(plaintext.([]byte))
 		return decompressedData
-	}, "Decompressing extracted data.", "\x1b[32m✔\x1b[0m Decompression completed.")
+	}, "\x1b[38;2;128;0;0mDecompressing extracted data.", "\x1b[32m✔\x1b[0m \x1b[38;2;0;255;0mDecompression completed.")
 
 	config.StylenCallFunctions(func() any {
 		err = os.WriteFile(cfg.DecodedFile+filemetadata.Extname, DecompressedData.([]byte), 0644)
@@ -86,7 +81,7 @@ func Decode(cfg *config.Config) {
 			log.Fatal("save to device", err)
 		}
 		return nil
-	}, "Writing extracted data to disk...", "\x1b[32m✔\x1b[0m File written successfully\n  Saved as: "+cfg.DecodedFile+filemetadata.Extname)
+	}, "\x1b[38;2;128;0;0mWriting extracted data to disk...", "\x1b[32m✔\x1b[0m \x1b[38;2;0;255;0mFile written successfully\n\x1b[32m✔\x1b[0m \x1b[38;2;0;255;0mSaved as: "+cfg.DecodedFile+filemetadata.Extname)
 
 }
 func readBytes(fmd *FileMetaData, pixels []uint8, length int) []byte {
@@ -113,126 +108,3 @@ func readBytes(fmd *FileMetaData, pixels []uint8, length int) []byte {
 
 	return byteslice
 }
-
-// func getDatalenandExtLen(pixels []uint8) FileMetaData {
-// 	index := 0
-// 	bitsRead := 0
-
-// 	var byteslice []byte
-// 	var currbyte byte
-// 	bitcount := 0
-// 	var extlength byte
-// 	for bitsRead < 40 {
-
-// 		bit := pixels[index] & 1
-
-// 		currbyte = (currbyte << 1) | bit
-// 		bitcount++
-// 		bitsRead++
-// 		index++
-
-// 		if bitcount == 8 && bitsRead <= 32 {
-// 			byteslice = append(byteslice, currbyte)
-// 			currbyte = 0
-// 			bitcount = 0
-// 		}
-
-// 		if bitsRead >= 32 && bitcount == 8 {
-// 			extlength = currbyte
-// 			currbyte = 0
-// 			bitcount = 0
-// 		}
-// 	}
-// 	// fmt.Println(extlength)
-
-// 	lengthBytes := binary.BigEndian.Uint32(byteslice)
-
-// 	return FileMetaData{
-// 		Datalength: int(lengthBytes) * 8,
-// 		Extlength:  int(extlength) * 8,
-// 		CurrIndex:  index,
-// 	}
-// }
-
-// func getFileExtension(filemetadata *FileMetaData, pixels []uint8) {
-// 	bitsRead := 0
-// 	var currbyte byte
-// 	bitcount := 0
-// 	var sliceofext []byte
-// 	for bitsRead < filemetadata.Extlength {
-// 		bit := pixels[filemetadata.CurrIndex] & 1
-// 		currbyte = (currbyte << 1) | bit
-// 		filemetadata.CurrIndex++
-// 		bitcount++
-// 		bitsRead++
-
-// 		if bitcount == 8 {
-// 			sliceofext = append(sliceofext, currbyte)
-// 			currbyte = 0
-// 			bitcount = 0
-// 		}
-// 	}
-
-// 	filemetadata.Extname = string(sliceofext)
-
-// }
-// func GetNonceandSalt(filemetadata *FileMetaData, pixels []uint8) ([]byte, []byte) {
-// 	bitsRead := 0
-
-// 	var saltslice []byte
-// 	var nonceslice []byte
-
-// 	var currbyte byte
-// 	bitcount := 0
-
-// 	for bitsRead < 224 { //salt * nonce means 16bytes * 12bytes = 224 bits we have to iterate till 224
-
-// 		bit := pixels[filemetadata.CurrIndex] & 1
-
-// 		currbyte = (currbyte << 1) | bit
-// 		bitcount++
-// 		bitsRead++
-// 		filemetadata.CurrIndex++
-
-// 		if bitcount == 8 && bitsRead <= 128 { //first 128 bits = salt
-// 			saltslice = append(saltslice, currbyte)
-// 			currbyte = 0
-// 			bitcount = 0
-// 		}
-
-// 		if bitsRead > 128 && bitcount == 8 { //rest of the bits till 224 belongs to salt
-// 			nonceslice = append(nonceslice, currbyte)
-// 			currbyte = 0
-// 			bitcount = 0
-// 		}
-// 	}
-
-//		return saltslice, nonceslice
-//	}
-// func DecodeData(filemetadata *FileMetaData, pixels []uint8) []byte {
-// 	bitsRead := 0
-// 	var sliceofdata []byte
-// 	var currbyte byte
-// 	bitcount := 0
-// 	for bitsRead < filemetadata.Datalength {
-// 		bit := pixels[filemetadata.CurrIndex] & 1
-// 		currbyte = (currbyte << 1) | bit
-// 		filemetadata.CurrIndex++
-// 		bitcount++
-// 		bitsRead++
-
-// 		if bitcount == 8 {
-// 			sliceofdata = append(sliceofdata, currbyte)
-// 			currbyte = 0
-// 			bitcount = 0
-// 		}
-// 	}
-// 	// filename = filename + filemetadata.Extname
-// 	// err := os.WriteFile(filename, sliceofdata, 0644)
-// 	// if err != nil {
-// 	// 	log.Fatal(err)
-// 	// }
-
-// 	return sliceofdata
-
-// }
