@@ -22,6 +22,8 @@ type FileMetaData struct {
 const (
 	DATA_BIT_LENGTH       = 32
 	FILE_EXTENSION_LENGTH = 8
+	SALT_BITS             = 128
+	NONCE_BITS            = 96
 )
 
 func Decode(cfg *config.Config) {
@@ -56,8 +58,9 @@ func Decode(cfg *config.Config) {
 	extensionLength := readBytes(&filemetadata, pixels, FILE_EXTENSION_LENGTH)
 	filemetadata.Extlength = int(extensionLength[0]) * 8
 
-	// filemetadata := getDatalenandExtLen(pixels)
-	getFileExtension(&filemetadata, pixels)
+	filemetadata.Extname = string(readBytes(&filemetadata, pixels, filemetadata.Extlength))
+
+	// getFileExtension(&filemetadata, pixels)
 	salt, nonce := GetNonceandSalt(&filemetadata, pixels)
 	ciphertext := DecodeData(&filemetadata, pixels)
 	// fmt.Println("decoded ciphertext:", len(ciphertext))
