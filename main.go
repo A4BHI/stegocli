@@ -95,6 +95,10 @@ var encodeCmd = &cobra.Command{
 			log.Fatal("Tool supports .png images only.")
 		}
 
+		if !Ispng(enc.OutputImage) {
+			log.Fatal("Tool supports .png images only.")
+		}
+
 		stego.Encode(&enc)
 
 		// fmt.Println("Image Path : ", enc.Image, "\nFile Path : ", enc.SecretFile)
@@ -134,6 +138,13 @@ var decodeCmd = &cobra.Command{
 			cmd.Help()
 			log.Fatal("Not enough arguments.")
 		}
+		if !Ispng(dec.EncodedImage) {
+			log.Fatal("Tool supports .png images only.")
+		}
+
+		// if !Ispng(dec.DecodedFile) {
+		// 	log.Fatal("Tool supports .png images only.")
+		// }
 
 		stego.Decode(&dec)
 

@@ -24,6 +24,7 @@ func StylenCallFunctions(function func() any, suffix string, finalmsg string) an
 	s.FinalMSG = finalmsg
 
 	s.Start()
+
 	// data := function
 	results := function()
 

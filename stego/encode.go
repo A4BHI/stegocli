@@ -6,6 +6,7 @@ import (
 	"image/png"
 	_ "image/png"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"log"
@@ -68,6 +69,7 @@ func Encode(cfg *config.Config) {
 	length := len(encryption.ciphertext)
 
 	ext := filepath.Ext(cfg.SecretFile)
+	// name := filepath.Base(cfg.SecretFile)
 	extdata := []byte(ext)
 
 	extbytes := byte(len(extdata))
@@ -95,9 +97,17 @@ func Encode(cfg *config.Config) {
 		}
 
 	}
-	OutFile, err := os.Create(cfg.OutputImage + ".png")
-	if err != nil {
-		log.Fatal(err)
+	var OutFile *os.File
+	if strings.Contains(cfg.OutputImage, ".png") {
+		OutFile, err = os.Create(cfg.OutputImage)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		OutFile, err = os.Create(cfg.OutputImage + ".png")
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	err = png.Encode(OutFile, rgba)

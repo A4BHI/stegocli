@@ -6,6 +6,7 @@ import (
 	_ "image/png"
 	"log"
 	"os"
+	"strings"
 
 	"stegocli/compress"
 	"stegocli/config"
@@ -27,6 +28,12 @@ const (
 )
 
 func Decode(cfg *config.Config) {
+	if strings.Contains(cfg.EncodedImage, ".png") {
+
+		splitted := strings.TrimRight(cfg.EncodedImage, ".png")
+		cfg.EncodedImage = splitted
+	}
+
 	inputimg, err := os.Open(cfg.EncodedImage + ".png")
 	if err != nil {
 		log.Fatal(err)
@@ -74,7 +81,11 @@ func Decode(cfg *config.Config) {
 		decompressedData := compress.Decompress(plaintext.([]byte))
 		return decompressedData
 	}, "\x1b[38;2;255;85;85m Decompressing extracted data.", "\x1b[32m✔\x1b[0m \x1b[38;2;0;255;0mDecompression completed.")
+	// if strings.Contains(cfg.DecodedFile, ".png") {
 
+	// 	splitted := strings.TrimRight(cfg.DecodedFile, ".png")
+	// 	cfg.DecodedFile = splitted
+	// }
 	config.StylenCallFunctions(func() any {
 		err = os.WriteFile(cfg.DecodedFile+filemetadata.Extname, DecompressedData.([]byte), 0644)
 		if err != nil {
