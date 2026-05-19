@@ -19,6 +19,11 @@ type FileMetaData struct {
 	CurrIndex  int
 }
 
+const (
+	DATA_BIT_LENGTH       = 32
+	FILE_EXTENSION_LENGTH = 8
+)
+
 func Decode(cfg *config.Config) {
 	inputimg, err := os.Open(cfg.EncodedImage + ".png")
 	if err != nil {
@@ -43,11 +48,12 @@ func Decode(cfg *config.Config) {
 
 	pixels := rgba.Pix
 	filemetadata := FileMetaData{}
-	datalen := readBytes(&filemetadata, pixels, 32)
+
+	datalen := readBytes(&filemetadata, pixels, DATA_BIT_LENGTH)
 	lengthBytes := binary.BigEndian.Uint32(datalen)
 	filemetadata.Datalength = int(lengthBytes) * 8
 
-	extensionLength := readBytes(&filemetadata, pixels, 8)
+	extensionLength := readBytes(&filemetadata, pixels, FILE_EXTENSION_LENGTH)
 	filemetadata.Extlength = int(extensionLength[0]) * 8
 
 	// filemetadata := getDatalenandExtLen(pixels)
@@ -89,45 +95,46 @@ func readBytes(fmd *FileMetaData, pixels []uint8, length int) []byte {
 
 	return byteslice
 }
-func getDatalenandExtLen(pixels []uint8) FileMetaData {
-	index := 0
-	bitsRead := 0
 
-	var byteslice []byte
-	var currbyte byte
-	bitcount := 0
-	var extlength byte
-	for bitsRead < 40 {
+// func getDatalenandExtLen(pixels []uint8) FileMetaData {
+// 	index := 0
+// 	bitsRead := 0
 
-		bit := pixels[index] & 1
+// 	var byteslice []byte
+// 	var currbyte byte
+// 	bitcount := 0
+// 	var extlength byte
+// 	for bitsRead < 40 {
 
-		currbyte = (currbyte << 1) | bit
-		bitcount++
-		bitsRead++
-		index++
+// 		bit := pixels[index] & 1
 
-		if bitcount == 8 && bitsRead <= 32 {
-			byteslice = append(byteslice, currbyte)
-			currbyte = 0
-			bitcount = 0
-		}
+// 		currbyte = (currbyte << 1) | bit
+// 		bitcount++
+// 		bitsRead++
+// 		index++
 
-		if bitsRead >= 32 && bitcount == 8 {
-			extlength = currbyte
-			currbyte = 0
-			bitcount = 0
-		}
-	}
-	// fmt.Println(extlength)
+// 		if bitcount == 8 && bitsRead <= 32 {
+// 			byteslice = append(byteslice, currbyte)
+// 			currbyte = 0
+// 			bitcount = 0
+// 		}
 
-	lengthBytes := binary.BigEndian.Uint32(byteslice)
+// 		if bitsRead >= 32 && bitcount == 8 {
+// 			extlength = currbyte
+// 			currbyte = 0
+// 			bitcount = 0
+// 		}
+// 	}
+// 	// fmt.Println(extlength)
 
-	return FileMetaData{
-		Datalength: int(lengthBytes) * 8,
-		Extlength:  int(extlength) * 8,
-		CurrIndex:  index,
-	}
-}
+// 	lengthBytes := binary.BigEndian.Uint32(byteslice)
+
+// 	return FileMetaData{
+// 		Datalength: int(lengthBytes) * 8,
+// 		Extlength:  int(extlength) * 8,
+// 		CurrIndex:  index,
+// 	}
+// }
 
 func getFileExtension(filemetadata *FileMetaData, pixels []uint8) {
 	bitsRead := 0
