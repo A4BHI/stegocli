@@ -42,6 +42,14 @@ func Decode(cfg *config.Config) {
 	}
 
 	pixels := rgba.Pix
+	// filemetadata := FileMetaData{}
+	// datalen := readBytes(&filemetadata, pixels, 32)
+	// lengthBytes := binary.BigEndian.Uint32(datalen)
+	// filemetadata.Datalength = int(lengthBytes) * 8
+
+	// extensionLength := readBytes(&filemetadata, pixels, 8)
+	// filemetadata.Extlength = int(extensionLength[0]) * 8
+
 	filemetadata := getDatalenandExtLen(pixels)
 	getFileExtension(&filemetadata, pixels)
 	salt, nonce := GetNonceandSalt(&filemetadata, pixels)
@@ -62,7 +70,7 @@ func readBytes(fmd *FileMetaData, pixels []uint8, length int) []byte {
 	var currbyte byte
 	var byteslice []byte
 	bitcount := 0
-	for bitsRead < length {
+	for bitsRead <= length {
 		if fmd.CurrIndex >= len(pixels) {
 			log.Fatal("payload exceeds image size")
 		}
