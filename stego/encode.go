@@ -58,7 +58,7 @@ func Encode(cfg *config.Config) {
 		salt       []byte
 	})
 
-	s := spinner.New(spinner.CharSets[14], 80*time.Millisecond) // 100s was likely a typo for 100ms	s.Start()
+	s := spinner.New(spinner.CharSets[14], 80*time.Millisecond)
 	s.Suffix = "  Embedding encrypted payload into the carrier image..."
 	s.Color("cyan", "bold")
 	s.FinalMSG = "\x1b[32m✔\x1b[0m Steganographic encoding complete. Payload secured.\n"
@@ -101,17 +101,7 @@ func Encode(cfg *config.Config) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	index = 0
-	// bitsPrinted := 0
-	// fmt.Print("Encode bits: ")
 
-	// for bitsPrinted < 32 {
-
-	// 	fmt.Print(pixels[index] & 1)
-	// 	bitsPrinted++
-	// 	index++
-	// }
-	// fmt.Println()
 	err = png.Encode(OutFile, rgba)
 	if err != nil {
 		log.Fatal(err)
