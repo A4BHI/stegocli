@@ -28,7 +28,7 @@ func StylenCallFunctions(function func() any, suffix string, finalmsg string) an
 	// data := function
 	results := function()
 
-	time.Sleep(1 * time.Second)
+	time.Sleep(500 * time.Millisecond)
 
 	s.Stop()
 	fmt.Println()

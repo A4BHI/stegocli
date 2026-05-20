@@ -68,12 +68,9 @@ func Encode(cfg *config.Config) {
 	index := 0
 	length := len(encryption.ciphertext)
 
-	// ext := filepath.Ext(cfg.SecretFile)
 	filename := filepath.Base(cfg.SecretFile)
 	nameData := []byte(filename)
-	// extdata := []byte(ext)
 
-	// extbytes := byte(len(extdata))
 	nameLenBytes := make([]byte, 2)
 	binary.BigEndian.PutUint16(nameLenBytes, uint16(len(nameData)))
 	lengthBytes := make([]byte, 4)
