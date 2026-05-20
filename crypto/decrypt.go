@@ -30,6 +30,5 @@ func Decrypt(ciphertext []byte, salt []byte, nonce []byte, password string) []by
 		log.Fatal(err)
 	}
 
-	// fmt.Println("File Decrypted")
 	return plaintext
 }

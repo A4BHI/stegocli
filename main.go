@@ -101,8 +101,6 @@ var encodeCmd = &cobra.Command{
 
 		stego.Encode(&enc)
 
-		// fmt.Println("Image Path : ", enc.Image, "\nFile Path : ", enc.SecretFile)
-
 	},
 }
 
@@ -124,11 +122,6 @@ var decodeCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		// dec.DecodedFile, err = cmd.Flags().GetString("output")
-		// if err != nil {
-		// 	log.Fatal(err)
-		// }
-
 		dec.Password, err = cmd.Flags().GetString("password")
 		if err != nil {
 			log.Fatal(err)
@@ -141,10 +134,6 @@ var decodeCmd = &cobra.Command{
 		if !Ispng(dec.EncodedImage) {
 			log.Fatal("Tool supports .png images only.")
 		}
-
-		// if !Ispng(dec.DecodedFile) {
-		// 	log.Fatal("Tool supports .png images only.")
-		// }
 
 		stego.Decode(&dec)
 
@@ -159,7 +148,6 @@ func init() {
 
 	rootcmd.AddCommand(encodeCmd)
 	decodeCmd.Flags().StringP("image", "i", "", "path to the secret image.")
-	// decodeCmd.Flags().StringP("output", "o", "", "Path to save the decoded file")
 	decodeCmd.Flags().StringP("password", "p", "", "Password to decrypt the hidden data.")
 
 	rootcmd.AddCommand(decodeCmd)
