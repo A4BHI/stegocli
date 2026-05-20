@@ -107,7 +107,7 @@ var encodeCmd = &cobra.Command{
 }
 
 var decodeCmd = &cobra.Command{
-	Use:   "decode -i secretimage.png -o outputfilename -p password",
+	Use:   "decode -i secretimage.png  -p password",
 	Short: "Extract a secret file from a PNG image",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -124,17 +124,17 @@ var decodeCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		dec.DecodedFile, err = cmd.Flags().GetString("output")
-		if err != nil {
-			log.Fatal(err)
-		}
+		// dec.DecodedFile, err = cmd.Flags().GetString("output")
+		// if err != nil {
+		// 	log.Fatal(err)
+		// }
 
 		dec.Password, err = cmd.Flags().GetString("password")
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		if dec.EncodedImage == "" || dec.DecodedFile == "" || dec.Password == "" {
+		if dec.EncodedImage == "" || dec.Password == "" {
 			cmd.Help()
 			log.Fatal("Not enough arguments.")
 		}
@@ -159,7 +159,7 @@ func init() {
 
 	rootcmd.AddCommand(encodeCmd)
 	decodeCmd.Flags().StringP("image", "i", "", "path to the secret image.")
-	decodeCmd.Flags().StringP("output", "o", "", "Path to save the decoded file")
+	// decodeCmd.Flags().StringP("output", "o", "", "Path to save the decoded file")
 	decodeCmd.Flags().StringP("password", "p", "", "Password to decrypt the hidden data.")
 
 	rootcmd.AddCommand(decodeCmd)

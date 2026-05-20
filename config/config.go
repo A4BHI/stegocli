@@ -12,8 +12,8 @@ type Config struct {
 	SecretFile   string
 	OutputImage  string
 	EncodedImage string
-	DecodedFile  string
-	Password     string
+	// DecodedFile  string
+	Password string
 }
 
 func StylenCallFunctions(function func() any, suffix string, finalmsg string) any {

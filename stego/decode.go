@@ -14,17 +14,17 @@ import (
 )
 
 type FileMetaData struct {
-	Datalength int
-	Extlength  int
-	Extname    string
-	CurrIndex  int
+	Datalength     int
+	FileNameLength int
+	FileName       string
+	CurrIndex      int
 }
 
 const (
-	DATA_BIT_LENGTH       = 32
-	FILE_EXTENSION_LENGTH = 8
-	SALT_BITS             = 128
-	NONCE_BITS            = 96
+	DATA_BIT_LENGTH  = 32
+	FILE_NAME_LENGTH = 16
+	SALT_BITS        = 128
+	NONCE_BITS       = 96
 )
 
 func Decode(cfg *config.Config) {
@@ -62,10 +62,11 @@ func Decode(cfg *config.Config) {
 	lengthBytes := binary.BigEndian.Uint32(datalen)
 	filemetadata.Datalength = int(lengthBytes) * 8
 
-	extensionLength := readBytes(&filemetadata, pixels, FILE_EXTENSION_LENGTH)
-	filemetadata.Extlength = int(extensionLength[0]) * 8
-
-	filemetadata.Extname = string(readBytes(&filemetadata, pixels, filemetadata.Extlength))
+	filenameLength := readBytes(&filemetadata, pixels, FILE_NAME_LENGTH)
+	filemetadata.FileNameLength = int(
+		binary.BigEndian.Uint16(filenameLength),
+	)
+	filemetadata.FileName = string(readBytes(&filemetadata, pixels, filemetadata.FileNameLength*8))
 
 	salt := readBytes(&filemetadata, pixels, SALT_BITS)
 	nonce := readBytes(&filemetadata, pixels, NONCE_BITS)
@@ -81,18 +82,14 @@ func Decode(cfg *config.Config) {
 		decompressedData := compress.Decompress(plaintext.([]byte))
 		return decompressedData
 	}, "\x1b[38;2;255;85;85m Decompressing extracted data.", "\x1b[32m✔\x1b[0m \x1b[38;2;0;255;0mDecompression completed.")
-	// if strings.Contains(cfg.DecodedFile, ".png") {
 
-	// 	splitted := strings.TrimRight(cfg.DecodedFile, ".png")
-	// 	cfg.DecodedFile = splitted
-	// }
 	config.StylenCallFunctions(func() any {
-		err = os.WriteFile(cfg.DecodedFile+filemetadata.Extname, DecompressedData.([]byte), 0644)
+		err = os.WriteFile(filemetadata.FileName, DecompressedData.([]byte), 0644)
 		if err != nil {
 			log.Fatal("save to device", err)
 		}
 		return nil
-	}, "\x1b[38;2;255;85;85m Writing extracted data to disk...", "\x1b[32m✔\x1b[0m \x1b[38;2;0;255;0mFile written successfully\n\x1b[32m✔\x1b[0m \x1b[38;2;0;255;0mSaved as: "+cfg.DecodedFile+filemetadata.Extname)
+	}, "\x1b[38;2;255;85;85m Writing extracted data to disk...", "\x1b[32m✔\x1b[0m \x1b[38;2;0;255;0mFile written successfully\n\x1b[32m✔\x1b[0m \x1b[38;2;0;255;0mSaved as: "+filemetadata.FileName)
 
 }
 func readBytes(fmd *FileMetaData, pixels []uint8, length int) []byte {
