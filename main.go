@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"stegocli/config"
 	"stegocli/stego"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -52,7 +53,7 @@ func Ispng(imagepath string) bool {
 var text, secretfile string
 
 var encodeCmd = &cobra.Command{
-	Use:   "encode -i image.png [-f file | -t text]  -p password",
+	Use:   "encode -i image.png [-f file | -t text] -o outputimage.png -p password",
 	Short: "Embed a secret file into a PNG image",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -115,8 +116,8 @@ var encodeCmd = &cobra.Command{
 			log.Fatal("Tool supports .png images only.")
 		}
 
-		if !Ispng(enc.OutputImage) {
-			log.Fatal("Tool supports .png images only.")
+		if !strings.HasSuffix(enc.OutputImage, ".png") {
+			log.Fatal("Output file must end with .png")
 		}
 
 		stego.Encode(&enc)

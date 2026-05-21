@@ -85,12 +85,12 @@ func Decode(cfg *config.Config) {
 	plaintext := config.StylenCallFunctions(func() any {
 		plaintext := crypto.Decrypt(ciphertext, salt, nonce, cfg.Password)
 		return plaintext
-	}, "\x1b[38;2;255;85;85m Decrypting embedded data.", "\x1b[32m✔\x1b[0m \x1b[38;2;0;255;0mDecryption completed.")
+	}, "\x1b[38;2;255;85;85m Decrypting embedded data.", "\x1b[32m✔\x1b[0m \x1b[38;2;80;220;120mDecryption completed.")
 
 	DecompressedData := config.StylenCallFunctions(func() any {
 		decompressedData := compress.Decompress(plaintext.([]byte))
 		return decompressedData
-	}, "\x1b[38;2;255;85;85m Decompressing extracted data.", "\x1b[32m✔\x1b[0m \x1b[38;2;0;255;0mDecompression completed.")
+	}, "\x1b[38;2;255;85;85m Decompressing extracted data.", "\x1b[32m✔\x1b[0m \x1b[38;2;80;220;120mDecompression completed.")
 
 	if flag == "file" {
 		config.StylenCallFunctions(func() any {
@@ -99,10 +99,12 @@ func Decode(cfg *config.Config) {
 				log.Fatal("save to device", err)
 			}
 			return nil
-		}, "\x1b[38;2;255;85;85m Writing extracted data to disk...", "\x1b[32m✔\x1b[0m \x1b[38;2;0;255;0mFile written successfully\n\x1b[32m✔\x1b[0m \x1b[38;2;0;255;0mSaved as: "+filemetadata.FileName)
-		fmt.Print(flag)
+		}, "\x1b[38;2;255;85;85m Writing extracted data to disk...", "\x1b[32m✔\x1b[0m \x1b[38;2;120;190;255mFile written successfully\n\x1b[32m✔\x1b[0m \x1b[38;2;220;140;255mSaved as: "+filemetadata.FileName)
+
 	} else {
-		fmt.Println("Secret Data : ", string(DecompressedData.([]byte)))
+
+		fmt.Println("\x1b[32m✔\x1b[0m \x1b[38;2;80;220;120mSecret extracted successfully\n" + "\x1b[38;2;120;190;255m\n[ Secret Data ]\n \x1b[38;2;255;215;0m➜\x1b[0m \x1b[38;2;220;140;255m" + string(DecompressedData.([]byte)))
+
 	}
 
 }
