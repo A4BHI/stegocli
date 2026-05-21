@@ -80,10 +80,12 @@ var encodeCmd = &cobra.Command{
 
 		if text != "" {
 			enc.SecretData = text
+			enc.Flag = "text"
 		}
 
 		if secretfile != "" {
 			enc.SecretData = secretfile
+			enc.Flag = "file"
 		}
 
 		if text != "" && secretfile != "" || text == "" && secretfile == "" {

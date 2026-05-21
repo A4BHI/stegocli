@@ -13,6 +13,7 @@ type Config struct {
 	OutputImage  string
 	EncodedImage string
 	Password     string
+	Flag         string
 }
 
 func StylenCallFunctions(function func() any, suffix string, finalmsg string) any {
