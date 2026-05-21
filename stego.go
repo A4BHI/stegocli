@@ -7,7 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"stegocli/config"
-	"stegocli/stego"
+	stego "stegocli/steganography"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -32,7 +32,7 @@ var banner = color + `
 
 // var bold = "\x1b[44m"
 var rootcmd = &cobra.Command{Use: "stego",
-	Long: "A simple, user-friendly CLI that hides and extracts files in PNG images using LSB steganography.",
+	Long: "A Go-based CLI tool for embedding and extracting encrypted files or text payloads in PNG images using LSB steganography.",
 	Args: cobra.ArbitraryArgs,
 }
 
@@ -54,7 +54,7 @@ var text, secretfile string
 
 var encodeCmd = &cobra.Command{
 	Use:   "encode -i image.png [-f file | -t text] -o outputimage.png -p password",
-	Short: "Embed a secret file into a PNG image",
+	Short: "Decode hidden files or text from a PNG image",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		// var Image, File string
@@ -128,7 +128,7 @@ var encodeCmd = &cobra.Command{
 var decodeCmd = &cobra.Command{
 
 	Use:   "decode -i secretimage.png  -p password",
-	Short: "Extract a secret file from a PNG image",
+	Short: "Extract hidden files or text from a PNG image",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 
