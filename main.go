@@ -67,7 +67,7 @@ var encodeCmd = &cobra.Command{
 			return
 		}
 
-		enc.SecretFile, err = cmd.Flags().GetString("file")
+		enc.SecretData, err = cmd.Flags().GetString("file")
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -85,7 +85,7 @@ var encodeCmd = &cobra.Command{
 			return
 		}
 
-		if enc.InputImage == "" || enc.SecretFile == "" || enc.Password == "" || enc.OutputImage == "" {
+		if enc.InputImage == "" || enc.SecretData == "" || enc.Password == "" || enc.OutputImage == "" {
 			cmd.Help()
 			log.Fatal("Not enough arguments.")
 

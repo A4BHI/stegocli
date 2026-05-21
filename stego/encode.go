@@ -42,7 +42,7 @@ func Encode(cfg *config.Config) {
 	pixels := rgba.Pix
 
 	result := config.StylenCallFunctions(func() any {
-		return compress.Compress(cfg.SecretFile)
+		return compress.Compress(cfg.SecretData)
 	}, "\x1b[38;2;255;85;85m Compressing the secret file...", "\x1b[32m✔\x1b[0m \x1b[38;2;0;255;0mData compressed successfully.")
 
 	encryptionResults := config.StylenCallFunctions(func() any {
@@ -68,7 +68,7 @@ func Encode(cfg *config.Config) {
 	index := 0
 	length := len(encryption.ciphertext)
 
-	filename := filepath.Base(cfg.SecretFile)
+	filename := filepath.Base(cfg.SecretData)
 	nameData := []byte(filename)
 
 	nameLenBytes := make([]byte, 2)

@@ -9,7 +9,7 @@ import (
 
 type Config struct {
 	InputImage   string
-	SecretFile   string
+	SecretData   string
 	OutputImage  string
 	EncodedImage string
 	Password     string
