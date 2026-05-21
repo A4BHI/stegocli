@@ -6,26 +6,46 @@ import (
 	"io"
 	"log"
 	"os"
+	"stegocli/config"
 )
 
-func Compress(file string) []byte {
-	data, err := os.Open(file)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer data.Close()
+func Compress(cfg *config.Config) []byte {
 
 	var b bytes.Buffer
+	var err error
 
 	gzip, err := gzip.NewWriterLevel(&b, gzip.BestCompression)
 	if err != nil {
 		log.Fatal(err)
 	}
-	io.Copy(gzip, data)
-	err = gzip.Close()
-	if err != nil {
-		log.Fatal(err)
+
+	var file *os.File
+	var data []byte
+
+	if cfg.Flag == "file" {
+		file, err = os.Open(cfg.SecretData)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer file.Close()
+		io.Copy(gzip, file)
+		err = gzip.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		data = []byte(cfg.SecretData)
+		_, err = gzip.Write(data)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = gzip.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
+
 	return b.Bytes()
 
 }

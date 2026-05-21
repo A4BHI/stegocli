@@ -2,6 +2,7 @@ package stego
 
 import (
 	"encoding/binary"
+	"fmt"
 	"image"
 	_ "image/png"
 	"log"
@@ -22,6 +23,7 @@ type FileMetaData struct {
 
 const (
 	DATA_BIT_LENGTH  = 32
+	FLAG_LENGTH      = 8
 	FILE_NAME_LENGTH = 16
 	SALT_BITS        = 128
 	NONCE_BITS       = 96
@@ -62,11 +64,18 @@ func Decode(cfg *config.Config) {
 	lengthBytes := binary.BigEndian.Uint32(datalen)
 	filemetadata.Datalength = int(lengthBytes) * 8
 
-	filenameLength := readBytes(&filemetadata, pixels, FILE_NAME_LENGTH)
-	filemetadata.FileNameLength = int(
-		binary.BigEndian.Uint16(filenameLength),
-	)
-	filemetadata.FileName = string(readBytes(&filemetadata, pixels, filemetadata.FileNameLength*8))
+	flaglen := readBytes(&filemetadata, pixels, FLAG_LENGTH)
+
+	flag := string(readBytes(&filemetadata, pixels, int(flaglen[0])*8))
+
+	if flag == "file" {
+
+		filenameLength := readBytes(&filemetadata, pixels, FILE_NAME_LENGTH)
+		filemetadata.FileNameLength = int(
+			binary.BigEndian.Uint16(filenameLength),
+		)
+		filemetadata.FileName = string(readBytes(&filemetadata, pixels, filemetadata.FileNameLength*8))
+	}
 
 	salt := readBytes(&filemetadata, pixels, SALT_BITS)
 	nonce := readBytes(&filemetadata, pixels, NONCE_BITS)
@@ -83,13 +92,18 @@ func Decode(cfg *config.Config) {
 		return decompressedData
 	}, "\x1b[38;2;255;85;85m Decompressing extracted data.", "\x1b[32m✔\x1b[0m \x1b[38;2;0;255;0mDecompression completed.")
 
-	config.StylenCallFunctions(func() any {
-		err = os.WriteFile(filemetadata.FileName, DecompressedData.([]byte), 0644)
-		if err != nil {
-			log.Fatal("save to device", err)
-		}
-		return nil
-	}, "\x1b[38;2;255;85;85m Writing extracted data to disk...", "\x1b[32m✔\x1b[0m \x1b[38;2;0;255;0mFile written successfully\n\x1b[32m✔\x1b[0m \x1b[38;2;0;255;0mSaved as: "+filemetadata.FileName)
+	if flag == "file" {
+		config.StylenCallFunctions(func() any {
+			err = os.WriteFile(filemetadata.FileName, DecompressedData.([]byte), 0644)
+			if err != nil {
+				log.Fatal("save to device", err)
+			}
+			return nil
+		}, "\x1b[38;2;255;85;85m Writing extracted data to disk...", "\x1b[32m✔\x1b[0m \x1b[38;2;0;255;0mFile written successfully\n\x1b[32m✔\x1b[0m \x1b[38;2;0;255;0mSaved as: "+filemetadata.FileName)
+		fmt.Print(flag)
+	} else {
+		fmt.Println("Secret Data : ", string(DecompressedData.([]byte)))
+	}
 
 }
 func readBytes(fmd *FileMetaData, pixels []uint8, length int) []byte {
