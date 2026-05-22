@@ -2,6 +2,9 @@ package config
 
 import (
 	"fmt"
+	"image"
+	"log"
+	"os"
 	"time"
 
 	"github.com/briandowns/spinner"
@@ -33,4 +36,18 @@ func StylenCallFunctions(function func() any, suffix string, finalmsg string) an
 	fmt.Println()
 
 	return results
+}
+
+func Ispng(imagepath string) bool {
+	file, err := os.Open(imagepath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, format, err := image.DecodeConfig(file)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return format == "png"
 }
