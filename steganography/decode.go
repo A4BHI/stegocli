@@ -22,11 +22,12 @@ type FileMetaData struct {
 }
 
 const (
-	DATA_BIT_LENGTH  = 32
+	DATA_BITS        = 32
 	FLAG_LENGTH      = 8
 	FILE_NAME_LENGTH = 16
 	SALT_BITS        = 128
 	NONCE_BITS       = 96
+	MODE_BITS        = 32
 )
 
 func Decode(cfg *config.Config) {
@@ -60,14 +61,14 @@ func Decode(cfg *config.Config) {
 	pixels := rgba.Pix
 	filemetadata := FileMetaData{}
 
-	datalen := readBytes(&filemetadata, pixels, DATA_BIT_LENGTH)
+	datalen := readBytes(&filemetadata, pixels, DATA_BITS)
 	lengthBytes := binary.BigEndian.Uint32(datalen)
 	filemetadata.Datalength = int(lengthBytes) * 8
 
 	flaglen := readBytes(&filemetadata, pixels, FLAG_LENGTH)
 
 	flag := string(readBytes(&filemetadata, pixels, int(flaglen[0])*8))
-
+	var fileMode os.FileMode
 	if flag == "file" {
 
 		filenameLength := readBytes(&filemetadata, pixels, FILE_NAME_LENGTH)
@@ -75,6 +76,8 @@ func Decode(cfg *config.Config) {
 			binary.BigEndian.Uint16(filenameLength),
 		)
 		filemetadata.FileName = string(readBytes(&filemetadata, pixels, filemetadata.FileNameLength*8))
+
+		fileMode = os.FileMode(binary.BigEndian.Uint32(readBytes(&filemetadata, pixels, MODE_BITS)))
 	}
 
 	salt := readBytes(&filemetadata, pixels, SALT_BITS)
@@ -94,7 +97,7 @@ func Decode(cfg *config.Config) {
 
 	if flag == "file" {
 		config.StylenCallFunctions(func() any {
-			err = os.WriteFile(filemetadata.FileName, DecompressedData.([]byte), 0644)
+			err = os.WriteFile(filemetadata.FileName, DecompressedData.([]byte), os.FileMode(fileMode))
 			if err != nil {
 				log.Fatal("save to device", err)
 			}

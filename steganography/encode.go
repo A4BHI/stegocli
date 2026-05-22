@@ -84,6 +84,20 @@ func Encode(cfg *config.Config) {
 
 		payload = append(payload, nameLenBytes...)
 		payload = append(payload, nameData...)
+
+		info, err := os.Stat(cfg.SecretData)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		mode := info.Mode()
+
+		modBytes := make([]byte, 4)
+
+		binary.BigEndian.PutUint32(modBytes, uint32(mode))
+
+		payload = append(payload, modBytes...)
+
 	}
 
 	payload = append(payload, encryption.salt...)
