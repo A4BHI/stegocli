@@ -64,10 +64,9 @@ var encodeCmd = &cobra.Command{
 			log.Fatal("No flags provided.")
 		}
 		enc := config.Config{}
-		enc.InputImage, err = cmd.Flags().GetString("image")
-		if err != nil {
-			fmt.Print(err)
-			return
+
+		if enc.InputImage, err = cmd.Flags().GetString("image"); err != nil {
+			log.Fatal(err)
 		}
 
 		if text, err = cmd.Flags().GetString("text"); err != nil {
@@ -94,16 +93,12 @@ var encodeCmd = &cobra.Command{
 			log.Fatal("Either use -t or use -f.")
 		}
 
-		enc.OutputImage, err = cmd.Flags().GetString("output")
-		if err != nil {
-			fmt.Println(err)
-			return
+		if enc.OutputImage, err = cmd.Flags().GetString("output"); err != nil {
+			log.Fatal(err)
 		}
 
-		enc.Password, err = cmd.Flags().GetString("password")
-		if err != nil {
-			fmt.Println(err)
-			return
+		if enc.Password, err = cmd.Flags().GetString("password"); err != nil {
+			log.Fatal(err)
 		}
 
 		if enc.InputImage == "" || enc.Password == "" || enc.OutputImage == "" {
@@ -139,13 +134,11 @@ var decodeCmd = &cobra.Command{
 		dec := config.Config{}
 		var err error
 
-		dec.EncodedImage, err = cmd.Flags().GetString("image")
-		if err != nil {
+		if dec.EncodedImage, err = cmd.Flags().GetString("image"); err != nil {
 			log.Fatal(err)
 		}
 
-		dec.Password, err = cmd.Flags().GetString("password")
-		if err != nil {
+		if dec.Password, err = cmd.Flags().GetString("password"); err != nil {
 			log.Fatal(err)
 		}
 
