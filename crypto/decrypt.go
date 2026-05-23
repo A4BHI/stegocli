@@ -5,6 +5,7 @@ import (
 	"crypto/cipher"
 	"crypto/pbkdf2"
 	"crypto/sha256"
+	"fmt"
 	"log"
 )
 
@@ -27,7 +28,8 @@ func Decrypt(ciphertext []byte, salt []byte, nonce []byte, password string) []by
 
 	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println()
+		log.Fatal("Authentication Failed.")
 	}
 
 	return plaintext
