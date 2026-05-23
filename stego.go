@@ -28,6 +28,7 @@ var banner = color + `
 
 func main() {
 	clear := exec.Command("clear")
+	
 	clear.Stdout = os.Stdout
 	clear.Run()
 
