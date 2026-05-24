@@ -33,7 +33,7 @@ const (
 func Decode(cfg *config.Config) {
 	if strings.Contains(cfg.EncodedImage, ".png") {
 
-		splitted := strings.TrimRight(cfg.EncodedImage, ".png")
+		splitted := strings.TrimSuffix(cfg.EncodedImage, ".png")
 		cfg.EncodedImage = splitted
 	}
 
